@@ -33,7 +33,8 @@ const obtenerClientePorId = (id, callback) => {
             dni,
             correo,
             telefono,
-            created_at
+            created_at,
+            rol
         FROM clientes
         WHERE id = ?
     `;

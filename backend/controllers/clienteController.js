@@ -349,7 +349,10 @@ const loginCliente = (req, res) => {
                         cliente.nombres,
 
                     correo:
-                        cliente.correo
+                        cliente.correo,
+                    
+                    rol:
+                        cliente.rol
 
                 }
 

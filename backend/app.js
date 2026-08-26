@@ -24,10 +24,12 @@ app.get("/api/prueba", (req, res) => {
 const habitacionRoutes = require("./routes/habitacionRoutes");
 const clienteRoutes = require("./routes/clienteRoutes");
 const reservaRoutes = require("./routes/reservaRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 app.use("/api/habitaciones", habitacionRoutes);
 app.use("/api/clientes", clienteRoutes);
 app.use("/api/reservas", reservaRoutes);
+app.use("/api/admin", adminRoutes);
 
 // ==========================
 console.log("🔥 APP BUGANVILLIAS NUEVA VERSION - f621d40");

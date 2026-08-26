@@ -34,6 +34,9 @@ const mensajeCuenta =
 const btnCerrarSesion =
     document.getElementById("btnCerrarSesion");
 
+const btnPanelDueno =
+    document.getElementById("btnPanelDueno");
+
 
 // ==========================================================
 // COMPROBAR SESIÓN
@@ -102,12 +105,24 @@ const cargarPerfil = async () => {
         }
 
 
-        // ==================================================
-        // DATOS DEL CLIENTE
-        // ==================================================
+       // ==================================================
+      // DATOS DEL CLIENTE
+      // ==================================================
 
         const cliente =
-            datos.cliente;
+        datos.cliente;
+
+
+// ==================================================
+// MOSTRAR PANEL DEL DUEÑO
+// ==================================================
+
+        if (cliente.rol === "dueno") {
+
+            btnPanelDueno.style.display =
+                "block";
+
+        }
 
 
         nombreCliente.textContent =
@@ -133,8 +148,7 @@ const cargarPerfil = async () => {
         datosTelefono.textContent =
             cliente.telefono;
 
-
-    } catch (error) {
+    }   catch (error) {
 
         console.error(
             "Error al cargar perfil:",
@@ -173,6 +187,19 @@ btnCerrarSesion.addEventListener(
     }
 );
 
+// ==========================================================
+// IR AL PANEL DEL DUEÑO
+// ==========================================================
+
+    btnPanelDueno.addEventListener(
+        "click",
+        () => {
+
+            window.location.href =
+                "panel-dueno.html";
+
+        }
+    );
 
 // ==========================================================
 // INICIAR

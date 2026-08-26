@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Panel del dueño - Buganvillias</title>
+
+    <link rel="stylesheet" href="estilos.css">
+
+</head>
+
+<body>
+
+    <main class="panel-dueno">
+
+        <header class="panel-header">
+
+            <div>
+                <h1>🏠 Buganvillias Bungalows</h1>
+                <p>Panel del dueño</p>
+            </div>
+
+            <button id="btnCerrarSesionDueno">
+                🚪 Cerrar sesión
+            </button>
+
+        </header>
+
+
+        <section class="panel-bienvenida">
+
+            <h2>Bienvenido, Administrador 👋</h2>
+
+            <p>
+                Desde aquí puedes administrar
+                las reservas, habitaciones y clientes.
+            </p>
+
+        </section>
+
+
+        <section class="panel-resumen">
+
+            <div class="tarjeta-panel">
+
+                <span>📅</span>
+
+                <h3>Reservas</h3>
+
+                <strong id="totalReservas">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="tarjeta-panel">
+
+                <span>🏠</span>
+
+                <h3>Habitaciones</h3>
+
+                <strong id="totalHabitaciones">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="tarjeta-panel">
+
+                <span>👥</span>
+
+                <h3>Clientes</h3>
+
+                <strong id="totalClientes">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="tarjeta-panel">
+
+                <span>💰</span>
+
+                <h3>Ingresos</h3>
+
+                <strong id="totalIngresos">
+                    S/ 0.00
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <section class="panel-reservas">
+
+            <h2>📋 Reservas recientes</h2>
+
+            <div id="listaReservas">
+
+                <p>
+                    Cargando reservas...
+                </p>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <script src="js/config.js"></script>
+    <script src="js/panelDueno.js"></script>
+</body>
+
+</html>

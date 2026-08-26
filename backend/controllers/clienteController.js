@@ -313,18 +313,18 @@ const loginCliente = (req, res) => {
 
             const token = jwt.sign(
                 
-                {
-                    id: cliente.id,
-                    correo: cliente.correo
-                },
+            {
+                id: cliente.id,
+                correo: cliente.correo,
+                rol: cliente.rol
+            },
 
-                process.env.JWT_SECRET,
+            process.env.JWT_SECRET,
 
-                {
-                    expiresIn: "7d"
-                }
-
-            );
+            {
+                expiresIn: "7d"
+            }
+        );
 
             console.log("✅ TOKEN JWT GENERADO");
             // ==================================================

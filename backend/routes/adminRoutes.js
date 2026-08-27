@@ -50,4 +50,26 @@ router.get(
 );
 
 
+// ==========================================================
+// RESERVAS RECIENTES
+// ==========================================================
+
+router.get(
+    "/reservas",
+    validarJWT,
+    validarDueno,
+    adminController.obtenerReservasRecientes
+);
+
+// ==========================================================
+// HABITACIONES
+// ==========================================================
+
+router.get(
+    "/habitaciones",
+    validarJWT,
+    validarDueno,
+    adminController.obtenerHabitaciones
+);
+
 module.exports = router;

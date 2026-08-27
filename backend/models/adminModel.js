@@ -103,7 +103,67 @@ const obtenerResumen = (callback) => {
 
 };
 
+// ==========================================================
+// OBTENER RESERVAS RECIENTES
+// ==========================================================
+
+const obtenerReservasRecientes = (callback) => {
+
+    const sql = `
+        SELECT
+            r.id,
+            r.codigo,
+            c.nombres,
+            c.apellidos,
+            h.nombre AS habitacion,
+            r.fecha_ingreso,
+            r.fecha_salida,
+            r.personas,
+            r.total
+        FROM reservas r
+
+        INNER JOIN clientes c
+            ON r.cliente_id = c.id
+
+        INNER JOIN habitaciones h
+            ON r.habitacion_id = h.id
+
+        ORDER BY r.id DESC
+
+        LIMIT 10
+    `;
+
+    db.query(sql, callback);
+
+};
+
+// ==========================================================
+// OBTENER HABITACIONES
+// ==========================================================
+
+const obtenerHabitaciones = (callback) => {
+
+    const sql = `
+        SELECT
+            id,
+            nombre,
+            descripcion,
+            precio_noche,
+            capacidad,
+            imagen,
+            estado,
+            created_at
+        FROM habitaciones
+        ORDER BY id ASC
+    `;
+
+    db.query(sql, callback);
+
+};
 
 module.exports = {
-    obtenerResumen
+    obtenerResumen,
+    obtenerReservasRecientes,
+    obtenerHabitaciones
 };
+

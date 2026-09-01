@@ -72,4 +72,15 @@ router.get(
     adminController.obtenerHabitaciones
 );
 
+// ==========================================================
+// ACTUALIZAR HABITACIÓN
+// ==========================================================
+
+router.put(
+    "/habitaciones/:id",
+    validarJWT,
+    validarDueno,
+    adminController.actualizarHabitacion
+);
+
 module.exports = router;

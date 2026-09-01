@@ -103,6 +103,7 @@ const obtenerResumen = (callback) => {
 
 };
 
+
 // ==========================================================
 // OBTENER RESERVAS RECIENTES
 // ==========================================================
@@ -137,6 +138,7 @@ const obtenerReservasRecientes = (callback) => {
 
 };
 
+
 // ==========================================================
 // OBTENER HABITACIONES
 // ==========================================================
@@ -161,9 +163,47 @@ const obtenerHabitaciones = (callback) => {
 
 };
 
+
+// ==========================================================
+// ACTUALIZAR HABITACIÓN
+// ==========================================================
+
+const actualizarHabitacion = (
+    id,
+    nombre,
+    precio_noche,
+    callback
+) => {
+
+    const sql = `
+        UPDATE habitaciones
+        SET
+            nombre = ?,
+            precio_noche = ?
+        WHERE id = ?
+    `;
+
+
+    db.query(
+        sql,
+        [
+            nombre,
+            precio_noche,
+            id
+        ],
+        callback
+    );
+
+};
+
+
+// ==========================================================
+// EXPORTAR FUNCIONES
+// ==========================================================
+
 module.exports = {
     obtenerResumen,
     obtenerReservasRecientes,
-    obtenerHabitaciones
+    obtenerHabitaciones,
+    actualizarHabitacion
 };
-

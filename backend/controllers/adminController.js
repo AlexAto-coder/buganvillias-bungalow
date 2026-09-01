@@ -132,8 +132,112 @@ const obtenerHabitaciones = (req, res) => {
 
 };
 
+// ==========================================================
+// ACTUALIZAR HABITACIÓN
+// ==========================================================
+
+const actualizarHabitacion = (req, res) => {
+
+    const id =
+        req.params.id;
+
+    const {
+        nombre,
+        precio_noche
+    } = req.body;
+
+
+    // ======================================================
+    // VALIDAR DATOS
+    // ======================================================
+
+    if (
+        !nombre ||
+        precio_noche === undefined
+    ) {
+
+        return res.status(400).json({
+
+            ok: false,
+
+            mensaje:
+                "Debe ingresar el nombre y el precio."
+
+        });
+
+    }
+
+
+    // ======================================================
+    // ACTUALIZAR EN BASE DE DATOS
+    // ======================================================
+
+    Admin.actualizarHabitacion(
+        id,
+        nombre,
+        precio_noche,
+        (error, resultado) => {
+
+            if (error) {
+
+                console.error(
+                    "ERROR AL ACTUALIZAR HABITACIÓN:",
+                    error
+                );
+
+                return res.status(500).json({
+
+                    ok: false,
+
+                    mensaje:
+                        "Error al actualizar la habitación."
+
+                });
+
+            }
+
+
+            // ==================================================
+            // VERIFICAR SI EXISTE
+            // ==================================================
+
+            if (
+                resultado.affectedRows === 0
+            ) {
+
+                return res.status(404).json({
+
+                    ok: false,
+
+                    mensaje:
+                        "Habitación no encontrada."
+
+                });
+
+            }
+
+
+            // ==================================================
+            // RESPUESTA CORRECTA
+            // ==================================================
+
+            res.json({
+
+                ok: true,
+
+                mensaje:
+                    "Habitación actualizada correctamente."
+
+            });
+
+        }
+    );
+
+};
+
 module.exports = {
     obtenerResumen,
     obtenerReservasRecientes,
-    obtenerHabitaciones
+    obtenerHabitaciones,
+    actualizarHabitacion
 };

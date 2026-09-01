@@ -8,6 +8,15 @@ const hamburger =
 const menu =
     document.querySelector(".menu-navegacion");
 
+// ==========================================================
+// CERRAR MENÚ AL CARGAR LA PÁGINA
+// ==========================================================
+
+if (menu) {
+
+    menu.classList.remove("spread");
+
+}
 
 // ==========================================================
 // ABRIR Y CERRAR MENÚ

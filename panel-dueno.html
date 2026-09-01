@@ -128,6 +128,97 @@
 
     </main>
 
+<!-- ========================================================= -->
+<!-- MODAL EDITAR HABITACIÓN -->
+<!-- ========================================================= -->
+
+<div
+    id="modalEditarHabitacion"
+    class="modal-editar-habitacion"
+    style="display: none;"
+>
+
+    <div class="modal-contenido">
+
+        <button
+            id="btnCerrarModalHabitacion"
+            class="btn-cerrar-modal"
+            type="button"
+        >
+            ✖
+        </button>
+
+
+        <h2>
+            ✏️ Editar habitación
+        </h2>
+
+
+        <form id="formEditarHabitacion">
+
+
+            <!-- ID OCULTO -->
+
+            <input
+                type="hidden"
+                id="editarHabitacionId"
+            >
+
+
+            <!-- NOMBRE -->
+
+            <label for="editarNombreHabitacion">
+                Nombre de la habitación
+            </label>
+
+            <input
+                type="text"
+                id="editarNombreHabitacion"
+                required
+            >
+
+
+            <!-- PRECIO -->
+
+            <label for="editarPrecioHabitacion">
+                Precio por noche (S/)
+            </label>
+
+            <input
+                type="number"
+                id="editarPrecioHabitacion"
+                min="0"
+                step="0.01"
+                required
+            >
+
+
+            <!-- BOTONES -->
+
+            <div class="modal-acciones">
+
+                <button
+                    type="submit"
+                    class="btn-guardar-habitacion"
+                >
+                    💾 Guardar cambios
+                </button>
+
+                <button
+                    type="button"
+                    id="btnCancelarEditarHabitacion"
+                    class="btn-cancelar-habitacion"
+                >
+                    Cancelar
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
 
     <script src="js/config.js"></script>
     <script src="js/panelDueno.js"></script>

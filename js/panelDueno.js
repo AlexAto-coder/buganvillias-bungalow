@@ -4,6 +4,54 @@
 
 const token = localStorage.getItem("token");
 
+// ==========================================================
+// CERRAR SESIÓN DEL DUEÑO
+// ==========================================================
+
+const btnCerrarSesionDueno = document.getElementById("btnCerrarSesionDueno");
+    if (btnCerrarSesionDueno) {
+
+    btnCerrarSesionDueno.addEventListener(
+        "click",
+        () => {
+
+            const confirmar =
+                confirm(
+                    "¿Deseas cerrar sesión?"
+                );
+
+
+            if (!confirmar) {
+
+                return;
+
+            }
+
+
+            // ==================================================
+            // ELIMINAR SESIÓN
+            // ==================================================
+
+            localStorage.removeItem(
+                "token"
+            );
+
+            localStorage.removeItem(
+                "cliente"
+            );
+
+
+            // ==================================================
+            // VOLVER AL INICIO
+            // ==================================================
+
+            window.location.href =
+                "index.html";
+
+        }
+    );
+
+}
 
 // ==========================================================
 // COMPROBAR SESIÓN
@@ -437,7 +485,310 @@ const cargarHabitaciones = async () => {
         const habitaciones =
             datos.habitaciones || [];
 
+    // ==========================================================
+// ELEMENTOS DEL MODAL EDITAR HABITACIÓN
+// ==========================================================
 
+const modalEditarHabitacion =
+    document.getElementById(
+        "modalEditarHabitacion"
+    );
+
+const formEditarHabitacion =
+    document.getElementById(
+        "formEditarHabitacion"
+    );
+
+const editarHabitacionId =
+    document.getElementById(
+        "editarHabitacionId"
+    );
+
+const editarNombreHabitacion =
+    document.getElementById(
+        "editarNombreHabitacion"
+    );
+
+const editarPrecioHabitacion =
+    document.getElementById(
+        "editarPrecioHabitacion"
+    );
+
+const btnCerrarModalHabitacion =
+    document.getElementById(
+        "btnCerrarModalHabitacion"
+    );
+
+const btnCancelarEditarHabitacion =
+    document.getElementById(
+        "btnCancelarEditarHabitacion"
+    );
+
+
+// ==========================================================
+// ABRIR MODAL PARA EDITAR HABITACIÓN
+// ==========================================================
+
+document.addEventListener("click", (event) => {
+
+    const botonEditar =
+        event.target.closest(
+            ".btn-editar-habitacion"
+        );
+
+
+    if (!botonEditar) {
+
+        return;
+
+    }
+
+
+    console.log(
+        "✏️ Editando habitación:",
+        botonEditar.dataset.id
+    );
+
+
+    const modal =
+        document.getElementById(
+            "modalEditarHabitacion"
+        );
+
+
+    if (!modal) {
+
+        console.error(
+            "❌ No se encontró el modal en panel-dueno.html"
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "editarHabitacionId"
+    ).value =
+        botonEditar.dataset.id;
+
+
+    document.getElementById(
+        "editarNombreHabitacion"
+    ).value =
+        botonEditar.dataset.nombre;
+
+
+    document.getElementById(
+        "editarPrecioHabitacion"
+    ).value =
+        botonEditar.dataset.precio;
+
+
+    modal.style.display =
+        "flex";
+
+});
+
+// ==========================================================
+// GUARDAR CAMBIOS DE HABITACIÓN
+// ==========================================================
+
+if (formEditarHabitacion) {
+
+    formEditarHabitacion.addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+
+            const id =
+                editarHabitacionId.value;
+
+
+            const nombre =
+                editarNombreHabitacion.value.trim();
+
+
+            const precio_noche =
+                Number(
+                    editarPrecioHabitacion.value
+                );
+
+
+            // ==================================================
+            // VALIDACIÓN
+            // ==================================================
+
+            if (!nombre) {
+
+                alert(
+                    "Ingrese el nombre de la habitación."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                Number.isNaN(precio_noche) ||
+                precio_noche < 0
+            ) {
+
+                alert(
+                    "Ingrese un precio válido."
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                const respuesta =
+                    await fetch(
+                        `${CONFIG.api.baseURL}/admin/habitaciones/${id}`,
+                        {
+
+                            method: "PUT",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json",
+
+                                Authorization:
+                                    `Bearer ${token}`
+
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    nombre,
+                                    precio_noche
+
+                                })
+
+                        }
+                    );
+
+
+                const datos =
+                    await respuesta.json();
+
+
+                if (
+                    !respuesta.ok ||
+                    !datos.ok
+                ) {
+
+                    alert(
+                        datos.mensaje ||
+                        "No se pudo actualizar la habitación."
+                    );
+
+                    return;
+
+                }
+
+
+                alert(
+                    "✅ Habitación actualizada correctamente."
+                );
+
+
+                // CERRAR MODAL
+
+                cerrarModalHabitacion();
+
+
+                // RECARGAR HABITACIONES
+
+                cargarHabitaciones();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Error al actualizar habitación:",
+                    error
+                );
+
+
+                alert(
+                    "❌ No se pudo conectar con el servidor."
+                );
+
+            }
+
+        }
+    );
+
+}
+
+// ==========================================================
+// FUNCIÓN CERRAR MODAL
+// ==========================================================
+
+function cerrarModalHabitacion() {
+
+    modalEditarHabitacion.style.display =
+        "none";
+
+}
+
+
+// ==========================================================
+// BOTÓN X
+// ==========================================================
+
+if (btnCerrarModalHabitacion) {
+
+    btnCerrarModalHabitacion.addEventListener(
+        "click",
+        cerrarModalHabitacion
+    );
+
+}
+
+
+// ==========================================================
+// BOTÓN CANCELAR
+// ==========================================================
+
+if (btnCancelarEditarHabitacion) {
+
+    btnCancelarEditarHabitacion.addEventListener(
+        "click",
+        cerrarModalHabitacion
+    );
+
+}
+
+
+// ==========================================================
+// CERRAR AL HACER CLIC FUERA DEL MODAL
+// ==========================================================
+
+        if (modalEditarHabitacion) {
+
+             modalEditarHabitacion.addEventListener("click", event => {
+            if (
+                event.target === modalEditarHabitacion
+            ) {
+
+                cerrarModalHabitacion();
+
+            }
+
+        }
+    );
+
+}
         // ==================================================
         // NO HAY HABITACIONES
         // ==================================================
@@ -454,12 +805,11 @@ const cargarHabitaciones = async () => {
 
         }
 
-
         // ==================================================
         // CREAR TARJETAS
         // ==================================================
 
-        let tarjetas = "";
+           let tarjetas = "";
 
 
         habitaciones.forEach(habitacion => {
@@ -519,6 +869,21 @@ const cargarHabitaciones = async () => {
 
                         </div>
 
+
+                        <!-- ================================= -->
+                        <!-- BOTÓN EDITAR HABITACIÓN -->
+                        <!-- ================================= -->
+
+                        <button
+                            type="button"
+                            class="btn-editar-habitacion"
+                            data-id="${habitacion.id}"
+                            data-nombre="${habitacion.nombre}"
+                            data-precio="${habitacion.precio_noche}"
+                        >
+                            ✏️ Editar habitación
+                        </button>
+
                     </div>
 
                 </article>
@@ -549,7 +914,6 @@ const cargarHabitaciones = async () => {
     }
 
 };
-
 
 // ==========================================================
 // INICIAR PANEL

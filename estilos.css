@@ -2194,3 +2194,176 @@ footer{
     }
 
 }
+
+/* ==========================================================
+   MODAL EDITAR HABITACIÓN
+========================================================== */
+
+.modal-editar-habitacion {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background:
+        rgba(0, 0, 0, 0.55);
+
+    z-index: 9999;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+
+}
+
+
+/* ==========================================================
+   CONTENIDO DEL MODAL
+========================================================== */
+
+.modal-contenido {
+
+    position: relative;
+
+    width: 100%;
+    max-width: 450px;
+
+    background: #ffffff;
+
+    border-radius: 15px;
+
+    padding: 30px;
+
+    box-sizing: border-box;
+
+    box-shadow:
+        0 10px 40px
+        rgba(0, 0, 0, 0.3);
+
+}
+
+
+.modal-contenido h2 {
+
+    margin-top: 0;
+
+    text-align: center;
+
+}
+
+
+/* ==========================================================
+   FORMULARIO
+========================================================== */
+
+.modal-contenido form {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+}
+
+
+.modal-contenido label {
+
+    font-weight: bold;
+
+    margin-top: 8px;
+
+}
+
+
+.modal-contenido input {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border: 1px solid #cccccc;
+
+    border-radius: 8px;
+
+    box-sizing: border-box;
+
+    font-size: 16px;
+
+}
+
+
+/* ==========================================================
+   BOTÓN CERRAR
+========================================================== */
+
+.btn-cerrar-modal {
+
+    position: absolute;
+
+    top: 10px;
+    right: 15px;
+
+    border: none;
+
+    background: transparent;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+}
+
+
+/* ==========================================================
+   ACCIONES
+========================================================== */
+
+.modal-acciones {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+}
+
+
+.btn-guardar-habitacion,
+.btn-cancelar-habitacion {
+
+    flex: 1;
+
+    padding: 12px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+}
+
+
+.btn-guardar-habitacion {
+
+    background: #6554a8;
+
+    color: white;
+
+}
+
+
+.btn-cancelar-habitacion {
+
+    background: #dddddd;
+
+}

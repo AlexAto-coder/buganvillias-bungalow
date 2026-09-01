@@ -206,3 +206,4 @@ btnCerrarSesion.addEventListener(
 // ==========================================================
 
 cargarPerfil();
+

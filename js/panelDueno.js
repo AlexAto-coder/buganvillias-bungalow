@@ -582,3 +582,29 @@ const iniciarPanel = async () => {
 // ==========================================================
 
 iniciarPanel();
+
+// ==========================================================
+// CERRAR SESIÓN DEL ADMINISTRADOR
+// ==========================================================
+
+const btnCerrarSesion =
+    document.getElementById("btnCerrarSesion");
+
+
+if (btnCerrarSesion) {
+
+    btnCerrarSesion.addEventListener(
+        "click",
+        () => {
+
+            // Eliminar sesión
+            localStorage.removeItem("token");
+            localStorage.removeItem("cliente");
+
+            // Volver al inicio
+            window.location.href = "index.html";
+
+        }
+    );
+
+}

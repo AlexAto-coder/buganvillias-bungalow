@@ -21,7 +21,11 @@ const galerias = {
         "img/experiencias/atardeceres/e5.jpg",
         "img/experiencias/atardeceres/e7.jpg",
         "img/experiencias/atardeceres/e12.jpg",
-        "img/experiencias/atardeceres/e13.jpg"
+        "img/experiencias/atardeceres/e13.jpg",
+        "img/experiencias/atardeceres/23.jpg",
+        "img/experiencias/atardeceres/24.jpg",
+        "img/experiencias/atardeceres/25.jpg",
+        "img/experiencias/atardeceres/26.jpg"
     ],
 
     gastronomia: [
@@ -54,7 +58,6 @@ const galerias = {
         "img/experiencias/tortugas/t5.jpg",
         "img/experiencias/tortugas/t6.jpg",
         "img/experiencias/tortugas/t7.jpg",
-        "img/experiencias/tortugas/t8.jpg",
         "img/experiencias/tortugas/t9.jpg",
         "img/experiencias/tortugas/t10.jpg"
     ]

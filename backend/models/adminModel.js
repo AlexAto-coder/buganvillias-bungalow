@@ -120,7 +120,8 @@ const obtenerReservasRecientes = (callback) => {
             r.fecha_ingreso,
             r.fecha_salida,
             r.personas,
-            r.total
+            r.total,
+            r.estado
         FROM reservas r
 
         INNER JOIN clientes c
@@ -196,6 +197,323 @@ const actualizarHabitacion = (
 
 };
 
+// ==========================================================
+// CONFIRMAR PAGO DE UNA RESERVA
+// ==========================================================
+
+const confirmarPago = (
+    reservaId,
+    metodo,
+    referencia,
+    monto,
+    callback
+) => {
+
+    // Obtener una conexión específica del pool
+    db.getConnection((error, connection) => {
+
+        if (error) {
+            return callback(error);
+        }
+
+        // Función auxiliar para liberar la conexión
+        const liberarConexion = () => {
+            connection.release();
+        };
+
+        // ==================================================
+        // INICIAR TRANSACCIÓN
+        // ==================================================
+
+        connection.beginTransaction((error) => {
+
+            if (error) {
+                liberarConexion();
+                return callback(error);
+            }
+
+            // ==================================================
+            // VERIFICAR RESERVA
+            // ==================================================
+
+            const sqlReserva = `
+                SELECT
+                    id,
+                    total,
+                    estado
+                FROM reservas
+                WHERE id = ?
+                FOR UPDATE
+            `;
+
+            connection.query(
+                sqlReserva,
+                [reservaId],
+                (error, reservas) => {
+
+                    if (error) {
+                        return connection.rollback(() => {
+                            liberarConexion();
+                            callback(error);
+                        });
+                    }
+
+                    // ==================================================
+                    // RESERVA NO ENCONTRADA
+                    // ==================================================
+
+                    if (reservas.length === 0) {
+
+                        return connection.rollback(() => {
+
+                            liberarConexion();
+
+                            const errorReserva =
+                                new Error(
+                                    "Reserva no encontrada."
+                                );
+
+                            errorReserva.codigo =
+                                "RESERVA_NO_ENCONTRADA";
+
+                            callback(errorReserva);
+                        });
+                    }
+
+                    const reserva = reservas[0];
+
+                    // ==================================================
+                    // VERIFICAR SI LA RESERVA ESTÁ CANCELADA
+                    // ==================================================
+
+                    if (reserva.estado === "cancelado") {
+
+                        return connection.rollback(() => {
+
+                            liberarConexion();
+
+                            const errorEstado =
+                                new Error(
+                                    "No se puede registrar un pago para una reserva cancelada."
+                                );
+
+                            errorEstado.codigo =
+                                "RESERVA_CANCELADA";
+
+                            callback(errorEstado);
+                        });
+                    }
+
+                    // ==================================================
+                    // VERIFICAR SI LA RESERVA YA ESTÁ PAGADA
+                    // ==================================================
+
+                    if (reserva.estado === "pagado") {
+
+                        return connection.rollback(() => {
+
+                            liberarConexion();
+
+                            const errorPagado =
+                                new Error(
+                                    "Esta reserva ya está marcada como pagada."
+                                );
+
+                            errorPagado.codigo =
+                                "RESERVA_YA_PAGADA";
+
+                            callback(errorPagado);
+                        });
+                    }
+
+                    // ==================================================
+                    // VERIFICAR QUE EL MONTO COINCIDA
+                    // ==================================================
+
+                    const totalReserva =
+                        Math.round(
+                            Number(reserva.total) * 100
+                        );
+
+                    const montoPago =
+                        Math.round(
+                            Number(monto) * 100
+                        );
+
+                    if (totalReserva !== montoPago) {
+
+                        return connection.rollback(() => {
+
+                            liberarConexion();
+
+                            const errorMonto =
+                                new Error(
+                                    "El monto del pago no coincide con el total de la reserva."
+                                );
+
+                            errorMonto.codigo =
+                                "MONTO_INCORRECTO";
+
+                            callback(errorMonto);
+                        });
+                    }
+
+                    // ==================================================
+                    // EVITAR PAGO DUPLICADO
+                    // ==================================================
+
+                    const sqlPagoExistente = `
+                        SELECT id
+                        FROM pagos
+                        WHERE reserva_id = ?
+                          AND estado = 'pagado'
+                        LIMIT 1
+                    `;
+
+                    connection.query(
+                        sqlPagoExistente,
+                        [reservaId],
+                        (error, pagos) => {
+
+                            if (error) {
+
+                                return connection.rollback(() => {
+
+                                    liberarConexion();
+                                    callback(error);
+
+                                });
+                            }
+
+                            if (pagos.length > 0) {
+
+                                return connection.rollback(() => {
+
+                                    liberarConexion();
+
+                                    const errorPago =
+                                        new Error(
+                                            "Esta reserva ya tiene un pago confirmado."
+                                        );
+
+                                    errorPago.codigo =
+                                        "PAGO_DUPLICADO";
+
+                                    callback(errorPago);
+                                });
+                            }
+
+                            // ==================================================
+                            // REGISTRAR PAGO
+                            // ==================================================
+
+                            const sqlPago = `
+                                INSERT INTO pagos (
+                                    reserva_id,
+                                    metodo,
+                                    referencia,
+                                    monto,
+                                    estado,
+                                    fecha_pago
+                                )
+                                VALUES (?, ?, ?, ?, 'pagado', NOW())
+                            `;
+
+                            connection.query(
+                                sqlPago,
+                                [
+                                    reservaId,
+                                    metodo,
+                                    referencia || null,
+                                    monto
+                                ],
+                                (error) => {
+
+                                    if (error) {
+
+                                        return connection.rollback(() => {
+
+                                            liberarConexion();
+                                            callback(error);
+
+                                        });
+                                    }
+
+                                    // ==================================================
+                                    // ACTUALIZAR RESERVA
+                                    // ==================================================
+
+                                    const sqlActualizarReserva = `
+                                        UPDATE reservas
+                                        SET estado = 'pagado'
+                                        WHERE id = ?
+                                    `;
+
+                                    connection.query(
+                                        sqlActualizarReserva,
+                                        [reservaId],
+                                        (error) => {
+
+                                            if (error) {
+
+                                                return connection.rollback(() => {
+
+                                                    liberarConexion();
+                                                    callback(error);
+
+                                                });
+                                            }
+
+                                            // ==================================================
+                                            // CONFIRMAR TRANSACCIÓN
+                                            // ==================================================
+
+                                            connection.commit(
+                                                (error) => {
+
+                                                    if (error) {
+
+                                                        return connection.rollback(() => {
+
+                                                            liberarConexion();
+                                                            callback(error);
+
+                                                        });
+                                                    }
+
+                                                    // Liberar conexión
+                                                    liberarConexion();
+
+                                                    // Respuesta exitosa
+                                                    callback(
+                                                        null,
+                                                        {
+                                                            reservaId,
+                                                            monto,
+                                                            estado: "pagado"
+                                                        }
+                                                    );
+
+                                                }
+                                            );
+
+                                        }
+                                    );
+
+                                }
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+        });
+
+    });
+
+};
 
 // ==========================================================
 // EXPORTAR FUNCIONES
@@ -205,5 +523,6 @@ module.exports = {
     obtenerResumen,
     obtenerReservasRecientes,
     obtenerHabitaciones,
-    actualizarHabitacion
+    actualizarHabitacion,
+    confirmarPago
 };

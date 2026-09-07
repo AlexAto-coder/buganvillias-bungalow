@@ -235,9 +235,252 @@ const actualizarHabitacion = (req, res) => {
 
 };
 
+// ==========================================================
+// CONFIRMAR PAGO DE UNA RESERVA
+// ==========================================================
+
+const confirmarPago = (req, res) => {
+
+    const reservaId = req.params.id;
+
+    const {
+        metodo,
+        referencia,
+        monto
+    } = req.body;
+
+
+    // ======================================================
+    // VALIDAR MÉTODO
+    // ======================================================
+
+    if (!metodo || !metodo.trim()) {
+
+        return res.status(400).json({
+
+            ok: false,
+
+            mensaje:
+                "Debe indicar el método de pago."
+
+        });
+
+    }
+
+
+    // ======================================================
+    // VALIDAR MONTO
+    // ======================================================
+
+    const montoNumerico =
+        Number(monto);
+
+
+    if (
+        monto === undefined ||
+        monto === null ||
+        !Number.isFinite(montoNumerico) ||
+        montoNumerico <= 0
+    ) {
+
+        return res.status(400).json({
+
+            ok: false,
+
+            mensaje:
+                "El monto del pago no es válido."
+
+        });
+
+    }
+
+
+    // ======================================================
+    // VALIDAR REFERENCIA
+    // ======================================================
+
+    if (
+        referencia !== undefined &&
+        referencia !== null &&
+        typeof referencia !== "string"
+    ) {
+
+        return res.status(400).json({
+
+            ok: false,
+
+            mensaje:
+                "La referencia del pago no es válida."
+
+        });
+
+    }
+
+
+    // ======================================================
+    // CONFIRMAR PAGO
+    // ======================================================
+
+    Admin.confirmarPago(
+        reservaId,
+        metodo.trim(),
+        referencia
+            ? referencia.trim()
+            : null,
+        montoNumerico,
+        (error, resultado) => {
+
+            if (error) {
+
+                console.error(
+                    "ERROR AL CONFIRMAR PAGO:",
+                    error
+                );
+
+
+                // ==========================================
+                // RESERVA NO ENCONTRADA
+                // ==========================================
+
+                if (
+                    error.codigo ===
+                    "RESERVA_NO_ENCONTRADA"
+                ) {
+
+                    return res.status(404).json({
+
+                        ok: false,
+
+                        mensaje:
+                            "Reserva no encontrada."
+
+                    });
+
+                }
+
+
+                // ==========================================
+                // RESERVA CANCELADA
+                // ==========================================
+
+                if (
+                    error.codigo ===
+                    "RESERVA_CANCELADA"
+                ) {
+
+                    return res.status(400).json({
+
+                        ok: false,
+
+                        mensaje:
+                            "No se puede registrar un pago para una reserva cancelada."
+
+                    });
+
+                }
+
+
+                // ==========================================
+                // PAGO DUPLICADO
+                // ==========================================
+
+                if (
+                    error.codigo ===
+                    "PAGO_DUPLICADO"
+                ) {
+
+                    return res.status(400).json({
+
+                        ok: false,
+
+                        mensaje:
+                            "Esta reserva ya tiene un pago confirmado."
+
+                    });
+
+                }
+
+                // ==========================================
+                // RESERVA YA PAGADA
+                // ==========================================
+
+                if (
+                    error.codigo ===
+                    "RESERVA_YA_PAGADA"
+                ) {
+
+                    return res.status(400).json({
+
+                        ok: false,
+
+                        mensaje:
+                            "Esta reserva ya está marcada como pagada."
+
+                    });
+
+                }
+
+
+                // ==========================================
+                // MONTO INCORRECTO
+                // ==========================================
+
+                if (
+                    error.codigo ===
+                    "MONTO_INCORRECTO"
+                ) {
+
+                    return res.status(400).json({
+
+                        ok: false,
+
+                        mensaje:
+                            "El monto del pago no coincide con el total de la reserva."
+
+                    });
+
+                }
+
+                // ==========================================
+                // ERROR GENERAL
+                // ==========================================
+
+                return res.status(500).json({
+
+                    ok: false,
+
+                    mensaje:
+                        "Error al confirmar el pago."
+
+                });
+
+            }
+
+
+            // ==================================================
+            // RESPUESTA CORRECTA
+            // ==================================================
+
+            return res.json({
+
+                ok: true,
+
+                mensaje:
+                    "Pago confirmado correctamente.",
+
+                pago: resultado
+
+            });
+
+        }
+    );
+
+};
+
 module.exports = {
     obtenerResumen,
     obtenerReservasRecientes,
     obtenerHabitaciones,
-    actualizarHabitacion
+    actualizarHabitacion,
+    confirmarPago
 };

@@ -4,12 +4,15 @@
 
 const token = localStorage.getItem("token");
 
+
 // ==========================================================
 // CERRAR SESIÓN DEL DUEÑO
 // ==========================================================
 
-const btnCerrarSesionDueno = document.getElementById("btnCerrarSesionDueno");
-    if (btnCerrarSesionDueno) {
+const btnCerrarSesionDueno =
+    document.getElementById("btnCerrarSesionDueno");
+
+if (btnCerrarSesionDueno) {
 
     btnCerrarSesionDueno.addEventListener(
         "click",
@@ -22,9 +25,7 @@ const btnCerrarSesionDueno = document.getElementById("btnCerrarSesionDueno");
 
 
             if (!confirmar) {
-
                 return;
-
             }
 
 
@@ -32,26 +33,21 @@ const btnCerrarSesionDueno = document.getElementById("btnCerrarSesionDueno");
             // ELIMINAR SESIÓN
             // ==================================================
 
-            localStorage.removeItem(
-                "token"
-            );
-
-            localStorage.removeItem(
-                "cliente"
-            );
+            localStorage.removeItem("token");
+            localStorage.removeItem("cliente");
 
 
             // ==================================================
             // VOLVER AL INICIO
             // ==================================================
 
-            window.location.href =
-                "index.html";
+            window.location.href = "index.html";
 
         }
     );
 
 }
+
 
 // ==========================================================
 // COMPROBAR SESIÓN
@@ -78,22 +74,24 @@ const verificarDueno = async () => {
                 method: "GET",
 
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization:
+                        `Bearer ${token}`
                 }
             }
         );
 
 
-        const datos = await respuesta.json();
+        const datos =
+            await respuesta.json();
 
 
         if (!respuesta.ok || !datos.ok) {
 
             localStorage.removeItem("token");
-
             localStorage.removeItem("cliente");
 
-            window.location.href = "login.html";
+            window.location.href =
+                "login.html";
 
             return false;
 
@@ -116,7 +114,8 @@ const verificarDueno = async () => {
         );
 
 
-        window.location.href = "login.html";
+        window.location.href =
+            "login.html";
 
 
         return false;
@@ -147,7 +146,8 @@ const cargarResumen = async () => {
         );
 
 
-        const datos = await respuesta.json();
+        const datos =
+            await respuesta.json();
 
 
         if (!respuesta.ok || !datos.ok) {
@@ -162,7 +162,8 @@ const cargarResumen = async () => {
         }
 
 
-        const resumen = datos.resumen;
+        const resumen =
+            datos.resumen;
 
 
         // ==================================================
@@ -190,7 +191,9 @@ const cargarResumen = async () => {
         document.getElementById(
             "totalIngresos"
         ).textContent =
-            `S/ ${Number(resumen.ingresos).toFixed(2)}`;
+            `S/ ${Number(
+                resumen.ingresos
+            ).toFixed(2)}`;
 
 
     } catch (error) {
@@ -212,10 +215,14 @@ const cargarResumen = async () => {
 const cargarReservasRecientes = async () => {
 
     const listaReservas =
-        document.getElementById("listaReservas");
+        document.getElementById(
+            "listaReservas"
+        );
 
 
-    console.log("📋 Iniciando carga de reservas...");
+    console.log(
+        "📋 Iniciando carga de reservas..."
+    );
 
 
     try {
@@ -301,116 +308,191 @@ const cargarReservasRecientes = async () => {
         }
 
 
-        // ==================================================
-        // CREAR TABLA
-        // ==================================================
+       // ==================================================
+// CREAR TABLA
+// ==================================================
 
-        let tabla = `
+let tabla = `
 
-            <div class="tabla-reservas">
+    <div class="tabla-reservas">
 
-                <table>
+        <table>
 
-                    <thead>
-
-                        <tr>
-
-                            <th>Código</th>
-
-                            <th>Cliente</th>
-
-                            <th>Habitación</th>
-
-                            <th>Entrada</th>
-
-                            <th>Salida</th>
-
-                            <th>Personas</th>
-
-                            <th>Total</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-        `;
-
-
-        reservas.forEach(reserva => {
-
-
-            const fechaEntrada =
-                reserva.fecha_ingreso
-                    ? new Date(
-                        reserva.fecha_ingreso
-                    ).toLocaleDateString("es-PE")
-                    : "-";
-
-
-            const fechaSalida =
-                reserva.fecha_salida
-                    ? new Date(
-                        reserva.fecha_salida
-                    ).toLocaleDateString("es-PE")
-                    : "-";
-
-
-            tabla += `
+            <thead>
 
                 <tr>
 
-                    <td>
-                        ${reserva.codigo || "-"}
-                    </td>
+                    <th>Código</th>
 
-                    <td>
-                        ${reserva.nombres || ""}
-                        ${reserva.apellidos || ""}
-                    </td>
+                    <th>Cliente</th>
 
-                    <td>
-                        ${reserva.habitacion || "-"}
-                    </td>
+                    <th>Habitación</th>
 
-                    <td>
-                        ${fechaEntrada}
-                    </td>
+                    <th>Entrada</th>
 
-                    <td>
-                        ${fechaSalida}
-                    </td>
+                    <th>Salida</th>
 
-                    <td>
-                        ${reserva.personas || 0}
-                    </td>
+                    <th>Personas</th>
 
-                    <td>
-                        S/ ${Number(
-                            reserva.total || 0
-                        ).toFixed(2)}
-                    </td>
+                    <th>Total</th>
+
+                    <th>Estado</th>
+
+                    <th>Acción</th>
 
                 </tr>
 
-            `;
+            </thead>
 
-        });
-
-
-        tabla += `
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        `;
+            <tbody>
+`;
 
 
-        listaReservas.innerHTML =
-            tabla;
+// ==================================================
+// RECORRER RESERVAS
+// ==================================================
+
+reservas.forEach(reserva => {
+
+    // Normalizar el estado
+    const estado = String(reserva.estado || "")
+        .trim()
+        .toLowerCase();
+
+        console.log(
+            "🔎 Reserva:",
+            reserva.id,
+            "Estado original:",
+            reserva.estado,
+            "Estado normalizado:",
+            estado
+        );
+
+    const fechaEntrada =
+        reserva.fecha_ingreso
+            ? new Date(
+                reserva.fecha_ingreso
+            ).toLocaleDateString("es-PE")
+            : "-";
+
+
+    const fechaSalida =
+        reserva.fecha_salida
+            ? new Date(
+                reserva.fecha_salida
+            ).toLocaleDateString("es-PE")
+            : "-";
+
+
+    tabla += `
+
+        <tr>
+
+            <td>
+                ${reserva.codigo || "-"}
+            </td>
+
+
+            <td>
+                ${reserva.nombres || ""}
+                ${reserva.apellidos || ""}
+            </td>
+
+
+            <td>
+                ${reserva.habitacion || "-"}
+            </td>
+
+
+            <td>
+                ${fechaEntrada}
+            </td>
+
+
+            <td>
+                ${fechaSalida}
+            </td>
+
+
+            <td>
+                ${reserva.personas || 0}
+            </td>
+
+
+            <td>
+                S/ ${Number(
+                    reserva.total || 0
+                ).toFixed(2)}
+            </td>
+
+
+            <!-- ==========================================
+                 ESTADO
+            =========================================== -->
+
+            <td>
+                ${
+                    estado === "pagado"
+                        ? "🟢 Pagado"
+                        : estado === "cancelado"
+                            ? "🔴 Cancelado"
+                            : "🟠 Pendiente"
+                }
+            </td>
+
+
+            <!-- ==========================================
+                 ACCIÓN
+            =========================================== -->
+
+            <td>
+
+                ${
+                    estado === "pendiente"
+                        ? `
+                            <button
+                                type="button"
+                                class="btn-confirmar-pago"
+                                data-id="${reserva.id}"
+                                data-total="${reserva.total}"
+                            >
+                                💰 Confirmar pago
+                            </button>
+                        `
+                        : "-"
+                }
+
+            </td>
+
+
+        </tr>
+
+    `;
+
+});
+
+
+// ==================================================
+// CERRAR TABLA
+// ==================================================
+
+tabla += `
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+`;
+
+
+// ==================================================
+// MOSTRAR TABLA
+// ==================================================
+
+listaReservas.innerHTML =
+    tabla;
 
 
         console.log(
@@ -419,7 +501,6 @@ const cargarReservasRecientes = async () => {
 
 
     } catch (error) {
-
 
         console.error(
             "❌ Error al cargar reservas recientes:",
@@ -441,13 +522,216 @@ const cargarReservasRecientes = async () => {
 
 
 // ==========================================================
+// CONFIRMAR PAGO DE UNA RESERVA
+// ==========================================================
+
+document.addEventListener(
+    "click",
+    async (event) => {
+
+        const boton =
+            event.target.closest(
+                ".btn-confirmar-pago"
+            );
+
+
+        if (!boton) {
+            return;
+        }
+
+
+        const reservaId =
+            boton.dataset.id;
+
+
+        const total =
+            Number(
+                boton.dataset.total
+            );
+
+
+        // ==================================================
+        // CONFIRMAR MONTO
+        // ==================================================
+
+        const confirmar =
+            confirm(
+                `¿Confirmar el pago completo de S/ ${total.toFixed(2)} para esta reserva?`
+            );
+
+
+        if (!confirmar) {
+            return;
+        }
+
+
+        // ==================================================
+        // MÉTODO DE PAGO
+        // ==================================================
+
+        const metodo =
+            prompt(
+                "Ingrese el método de pago:\n\n" +
+                "Ejemplo: Yape, Plin, Transferencia o Efectivo"
+            );
+
+
+        if (!metodo || !metodo.trim()) {
+
+            alert(
+                "Debe indicar el método de pago."
+            );
+
+            return;
+
+        }
+
+
+        // ==================================================
+        // REFERENCIA
+        // ==================================================
+
+        const referencia =
+            prompt(
+                "Ingrese la referencia del pago (opcional):"
+            );
+
+
+        // ==================================================
+        // DESACTIVAR BOTÓN
+        // ==================================================
+
+        boton.disabled = true;
+
+        boton.textContent =
+            "⏳ Procesando...";
+
+
+        try {
+
+            // ==================================================
+            // ENVIAR PAGO AL SERVIDOR
+            // ==================================================
+
+            const respuesta =
+                await fetch(
+                    `${CONFIG.api.baseURL}/admin/reservas/${reservaId}/pago`,
+                    {
+
+                        method: "PUT",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            Authorization:
+                                `Bearer ${token}`
+
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                metodo:
+                                    metodo.trim(),
+
+                                referencia:
+                                    referencia
+                                        ? referencia.trim()
+                                        : null,
+
+                                monto:
+                                    total
+
+                            })
+
+                    }
+                );
+
+
+            const datos =
+                await respuesta.json();
+
+
+            // ==================================================
+            // ERROR DEL SERVIDOR
+            // ==================================================
+
+            if (
+                !respuesta.ok ||
+                !datos.ok
+            ) {
+
+                alert(
+                    datos.mensaje ||
+                    "No se pudo confirmar el pago."
+                );
+
+
+                boton.disabled = false;
+
+                boton.textContent =
+                    "💰 Confirmar pago";
+
+
+                return;
+
+            }
+
+
+            // ==================================================
+            // PAGO CONFIRMADO
+            // ==================================================
+
+            alert(
+                "✅ Pago confirmado correctamente."
+            );
+
+
+            // ==================================================
+            // ACTUALIZAR INFORMACIÓN
+            // ==================================================
+
+            await cargarReservasRecientes();
+
+            await cargarResumen();
+
+
+        } catch (error) {
+
+            console.error(
+                "❌ Error al confirmar pago:",
+                error
+            );
+
+
+            alert(
+                "❌ No se pudo conectar con el servidor."
+            );
+
+
+            boton.disabled = false;
+
+            boton.textContent =
+                "💰 Confirmar pago";
+
+        }
+
+    }
+);
+
+
+// ==========================================================
 // CARGAR HABITACIONES
 // ==========================================================
 
 const cargarHabitaciones = async () => {
 
     const listaHabitaciones =
-        document.getElementById("listaHabitaciones");
+        document.getElementById(
+            "listaHabitaciones"
+        );
 
 
     try {
@@ -485,210 +769,88 @@ const cargarHabitaciones = async () => {
         const habitaciones =
             datos.habitaciones || [];
 
-    // ==========================================================
-// ELEMENTOS DEL MODAL EDITAR HABITACIÓN
-// ==========================================================
 
-const modalEditarHabitacion =
-    document.getElementById(
-        "modalEditarHabitacion"
-    );
+        // ==========================================================
+        // ELEMENTOS DEL MODAL EDITAR HABITACIÓN
+        // ==========================================================
 
-const formEditarHabitacion =
-    document.getElementById(
-        "formEditarHabitacion"
-    );
+        const modalEditarHabitacion =
+            document.getElementById(
+                "modalEditarHabitacion"
+            );
 
-const editarHabitacionId =
-    document.getElementById(
-        "editarHabitacionId"
-    );
 
-const editarNombreHabitacion =
-    document.getElementById(
-        "editarNombreHabitacion"
-    );
+        const formEditarHabitacion =
+            document.getElementById(
+                "formEditarHabitacion"
+            );
 
-const editarPrecioHabitacion =
-    document.getElementById(
-        "editarPrecioHabitacion"
-    );
 
-const btnCerrarModalHabitacion =
-    document.getElementById(
-        "btnCerrarModalHabitacion"
-    );
+        const editarHabitacionId =
+            document.getElementById(
+                "editarHabitacionId"
+            );
 
-const btnCancelarEditarHabitacion =
-    document.getElementById(
-        "btnCancelarEditarHabitacion"
-    );
 
+        const editarNombreHabitacion =
+            document.getElementById(
+                "editarNombreHabitacion"
+            );
 
-// ==========================================================
-// ABRIR MODAL PARA EDITAR HABITACIÓN
-// ==========================================================
 
-document.addEventListener("click", (event) => {
+        const editarPrecioHabitacion =
+            document.getElementById(
+                "editarPrecioHabitacion"
+            );
 
-    const botonEditar =
-        event.target.closest(
-            ".btn-editar-habitacion"
-        );
 
+        const btnCerrarModalHabitacion =
+            document.getElementById(
+                "btnCerrarModalHabitacion"
+            );
 
-    if (!botonEditar) {
 
-        return;
+        const btnCancelarEditarHabitacion =
+            document.getElementById(
+                "btnCancelarEditarHabitacion"
+            );
 
-    }
 
+        // ==========================================================
+        // ABRIR MODAL PARA EDITAR HABITACIÓN
+        // ==========================================================
 
-    console.log(
-        "✏️ Editando habitación:",
-        botonEditar.dataset.id
-    );
+        document.addEventListener(
+            "click",
+            (event) => {
 
-
-    const modal =
-        document.getElementById(
-            "modalEditarHabitacion"
-        );
-
-
-    if (!modal) {
-
-        console.error(
-            "❌ No se encontró el modal en panel-dueno.html"
-        );
-
-        return;
-
-    }
-
-
-    document.getElementById(
-        "editarHabitacionId"
-    ).value =
-        botonEditar.dataset.id;
-
-
-    document.getElementById(
-        "editarNombreHabitacion"
-    ).value =
-        botonEditar.dataset.nombre;
-
-
-    document.getElementById(
-        "editarPrecioHabitacion"
-    ).value =
-        botonEditar.dataset.precio;
-
-
-    modal.style.display =
-        "flex";
-
-});
-
-// ==========================================================
-// GUARDAR CAMBIOS DE HABITACIÓN
-// ==========================================================
-
-if (formEditarHabitacion) {
-
-    formEditarHabitacion.addEventListener(
-        "submit",
-        async event => {
-
-            event.preventDefault();
-
-
-            const id =
-                editarHabitacionId.value;
-
-
-            const nombre =
-                editarNombreHabitacion.value.trim();
-
-
-            const precio_noche =
-                Number(
-                    editarPrecioHabitacion.value
-                );
-
-
-            // ==================================================
-            // VALIDACIÓN
-            // ==================================================
-
-            if (!nombre) {
-
-                alert(
-                    "Ingrese el nombre de la habitación."
-                );
-
-                return;
-
-            }
-
-
-            if (
-                Number.isNaN(precio_noche) ||
-                precio_noche < 0
-            ) {
-
-                alert(
-                    "Ingrese un precio válido."
-                );
-
-                return;
-
-            }
-
-
-            try {
-
-                const respuesta =
-                    await fetch(
-                        `${CONFIG.api.baseURL}/admin/habitaciones/${id}`,
-                        {
-
-                            method: "PUT",
-
-                            headers: {
-
-                                "Content-Type":
-                                    "application/json",
-
-                                Authorization:
-                                    `Bearer ${token}`
-
-                            },
-
-                            body:
-                                JSON.stringify({
-
-                                    nombre,
-                                    precio_noche
-
-                                })
-
-                        }
+                const botonEditar =
+                    event.target.closest(
+                        ".btn-editar-habitacion"
                     );
 
 
-                const datos =
-                    await respuesta.json();
+                if (!botonEditar) {
+                    return;
+                }
 
 
-                if (
-                    !respuesta.ok ||
-                    !datos.ok
-                ) {
+                console.log(
+                    "✏️ Editando habitación:",
+                    botonEditar.dataset.id
+                );
 
-                    alert(
-                        datos.mensaje ||
-                        "No se pudo actualizar la habitación."
+
+                const modal =
+                    document.getElementById(
+                        "modalEditarHabitacion"
+                    );
+
+
+                if (!modal) {
+
+                    console.error(
+                        "❌ No se encontró el modal en panel-dueno.html"
                     );
 
                     return;
@@ -696,99 +858,237 @@ if (formEditarHabitacion) {
                 }
 
 
-                alert(
-                    "✅ Habitación actualizada correctamente."
-                );
+                document.getElementById(
+                    "editarHabitacionId"
+                ).value =
+                    botonEditar.dataset.id;
 
 
-                // CERRAR MODAL
-
-                cerrarModalHabitacion();
-
-
-                // RECARGAR HABITACIONES
-
-                cargarHabitaciones();
+                document.getElementById(
+                    "editarNombreHabitacion"
+                ).value =
+                    botonEditar.dataset.nombre;
 
 
-            } catch (error) {
-
-                console.error(
-                    "Error al actualizar habitación:",
-                    error
-                );
+                document.getElementById(
+                    "editarPrecioHabitacion"
+                ).value =
+                    botonEditar.dataset.precio;
 
 
-                alert(
-                    "❌ No se pudo conectar con el servidor."
-                );
+                modal.style.display =
+                    "flex";
+
+            }
+        );
+
+
+        // ==========================================================
+        // GUARDAR CAMBIOS DE HABITACIÓN
+        // ==========================================================
+
+        if (formEditarHabitacion) {
+
+            formEditarHabitacion.addEventListener(
+                "submit",
+                async event => {
+
+                    event.preventDefault();
+
+
+                    const id =
+                        editarHabitacionId.value;
+
+
+                    const nombre =
+                        editarNombreHabitacion.value.trim();
+
+
+                    const precio_noche =
+                        Number(
+                            editarPrecioHabitacion.value
+                        );
+
+
+                    // ==================================================
+                    // VALIDACIÓN
+                    // ==================================================
+
+                    if (!nombre) {
+
+                        alert(
+                            "Ingrese el nombre de la habitación."
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        Number.isNaN(precio_noche) ||
+                        precio_noche < 0
+                    ) {
+
+                        alert(
+                            "Ingrese un precio válido."
+                        );
+
+                        return;
+
+                    }
+
+
+                    try {
+
+                        const respuesta =
+                            await fetch(
+                                `${CONFIG.api.baseURL}/admin/habitaciones/${id}`,
+                                {
+
+                                    method: "PUT",
+
+                                    headers: {
+
+                                        "Content-Type":
+                                            "application/json",
+
+                                        Authorization:
+                                            `Bearer ${token}`
+
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+
+                                            nombre,
+                                            precio_noche
+
+                                        })
+
+                                }
+                            );
+
+
+                        const datos =
+                            await respuesta.json();
+
+
+                        if (
+                            !respuesta.ok ||
+                            !datos.ok
+                        ) {
+
+                            alert(
+                                datos.mensaje ||
+                                "No se pudo actualizar la habitación."
+                            );
+
+                            return;
+
+                        }
+
+
+                        alert(
+                            "✅ Habitación actualizada correctamente."
+                        );
+
+
+                        cerrarModalHabitacion();
+
+
+                        cargarHabitaciones();
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "Error al actualizar habitación:",
+                            error
+                        );
+
+
+                        alert(
+                            "❌ No se pudo conectar con el servidor."
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        // ==========================================================
+        // FUNCIÓN CERRAR MODAL
+        // ==========================================================
+
+        function cerrarModalHabitacion() {
+
+            if (modalEditarHabitacion) {
+
+                modalEditarHabitacion.style.display =
+                    "none";
 
             }
 
         }
-    );
-
-}
-
-// ==========================================================
-// FUNCIÓN CERRAR MODAL
-// ==========================================================
-
-function cerrarModalHabitacion() {
-
-    modalEditarHabitacion.style.display =
-        "none";
-
-}
 
 
-// ==========================================================
-// BOTÓN X
-// ==========================================================
+        // ==========================================================
+        // BOTÓN X
+        // ==========================================================
 
-if (btnCerrarModalHabitacion) {
+        if (btnCerrarModalHabitacion) {
 
-    btnCerrarModalHabitacion.addEventListener(
-        "click",
-        cerrarModalHabitacion
-    );
+            btnCerrarModalHabitacion.addEventListener(
+                "click",
+                cerrarModalHabitacion
+            );
 
-}
-
-
-// ==========================================================
-// BOTÓN CANCELAR
-// ==========================================================
-
-if (btnCancelarEditarHabitacion) {
-
-    btnCancelarEditarHabitacion.addEventListener(
-        "click",
-        cerrarModalHabitacion
-    );
-
-}
+        }
 
 
-// ==========================================================
-// CERRAR AL HACER CLIC FUERA DEL MODAL
-// ==========================================================
+        // ==========================================================
+        // BOTÓN CANCELAR
+        // ==========================================================
+
+        if (btnCancelarEditarHabitacion) {
+
+            btnCancelarEditarHabitacion.addEventListener(
+                "click",
+                cerrarModalHabitacion
+            );
+
+        }
+
+
+        // ==========================================================
+        // CERRAR AL HACER CLIC FUERA DEL MODAL
+        // ==========================================================
 
         if (modalEditarHabitacion) {
 
-             modalEditarHabitacion.addEventListener("click", event => {
-            if (
-                event.target === modalEditarHabitacion
-            ) {
+            modalEditarHabitacion.addEventListener(
+                "click",
+                event => {
 
-                cerrarModalHabitacion();
+                    if (
+                        event.target ===
+                        modalEditarHabitacion
+                    ) {
 
-            }
+                        cerrarModalHabitacion();
+
+                    }
+
+                }
+            );
 
         }
-    );
 
-}
+
         // ==================================================
         // NO HAY HABITACIONES
         // ==================================================
@@ -805,92 +1105,95 @@ if (btnCancelarEditarHabitacion) {
 
         }
 
+
         // ==================================================
         // CREAR TARJETAS
         // ==================================================
 
-           let tarjetas = "";
+        let tarjetas = "";
 
 
-        habitaciones.forEach(habitacion => {
+        habitaciones.forEach(
+            habitacion => {
 
-            tarjetas += `
+                tarjetas += `
 
-                <article class="tarjeta-habitacion">
+                    <article class="tarjeta-habitacion">
 
-                    ${
-                        habitacion.imagen
-                            ? `
-                            <img
-                                src="${habitacion.imagen}"
-                                alt="${habitacion.nombre}"
+                        ${
+                            habitacion.imagen
+                                ? `
+                                    <img
+                                        src="${habitacion.imagen}"
+                                        alt="${habitacion.nombre}"
+                                    >
+                                `
+                                : ""
+                        }
+
+
+                        <div class="contenido-habitacion">
+
+                            <h3>
+                                🏠 ${habitacion.nombre}
+                            </h3>
+
+
+                            <p>
+                                ${
+                                    habitacion.descripcion ||
+                                    "Sin descripción."
+                                }
+                            </p>
+
+
+                            <div class="datos-habitacion">
+
+                                <span>
+                                    💰 S/
+                                    ${Number(
+                                        habitacion.precio_noche || 0
+                                    ).toFixed(2)}
+                                    / noche
+                                </span>
+
+
+                                <span>
+                                    👥 Capacidad:
+                                    ${habitacion.capacidad}
+                                </span>
+
+
+                                <span>
+                                    📌 Estado:
+                                    ${habitacion.estado}
+                                </span>
+
+                            </div>
+
+
+                            <!-- ================================= -->
+                            <!-- BOTÓN EDITAR HABITACIÓN -->
+                            <!-- ================================= -->
+
+                            <button
+                                type="button"
+                                class="btn-editar-habitacion"
+                                data-id="${habitacion.id}"
+                                data-nombre="${habitacion.nombre}"
+                                data-precio="${habitacion.precio_noche}"
                             >
-                        `
-                            : ""
-                    }
-
-
-                    <div class="contenido-habitacion">
-
-                        <h3>
-                            🏠 ${habitacion.nombre}
-                        </h3>
-
-
-                        <p>
-                            ${
-                                habitacion.descripcion ||
-                                "Sin descripción."
-                            }
-                        </p>
-
-
-                        <div class="datos-habitacion">
-
-                            <span>
-                                💰 S/
-                                ${Number(
-                                    habitacion.precio_noche || 0
-                                ).toFixed(2)}
-                                / noche
-                            </span>
-
-
-                            <span>
-                                👥 Capacidad:
-                                ${habitacion.capacidad}
-                            </span>
-
-
-                            <span>
-                                📌 Estado:
-                                ${habitacion.estado}
-                            </span>
+                                ✏️ Editar habitación
+                            </button>
 
                         </div>
 
+                    </article>
 
-                        <!-- ================================= -->
-                        <!-- BOTÓN EDITAR HABITACIÓN -->
-                        <!-- ================================= -->
+                `;
 
-                        <button
-                            type="button"
-                            class="btn-editar-habitacion"
-                            data-id="${habitacion.id}"
-                            data-nombre="${habitacion.nombre}"
-                            data-precio="${habitacion.precio_noche}"
-                        >
-                            ✏️ Editar habitación
-                        </button>
-
-                    </div>
-
-                </article>
-
-            `;
-
-        });
+            }
+        );
 
 
         listaHabitaciones.innerHTML =
@@ -915,6 +1218,7 @@ if (btnCancelarEditarHabitacion) {
 
 };
 
+
 // ==========================================================
 // INICIAR PANEL
 // ==========================================================
@@ -932,9 +1236,7 @@ const iniciarPanel = async () => {
 
     await cargarResumen();
 
-
     await cargarReservasRecientes();
-
 
     await cargarHabitaciones();
 
@@ -946,29 +1248,3 @@ const iniciarPanel = async () => {
 // ==========================================================
 
 iniciarPanel();
-
-// ==========================================================
-// CERRAR SESIÓN DEL ADMINISTRADOR
-// ==========================================================
-
-const btnCerrarSesion =
-    document.getElementById("btnCerrarSesion");
-
-
-if (btnCerrarSesion) {
-
-    btnCerrarSesion.addEventListener(
-        "click",
-        () => {
-
-            // Eliminar sesión
-            localStorage.removeItem("token");
-            localStorage.removeItem("cliente");
-
-            // Volver al inicio
-            window.location.href = "index.html";
-
-        }
-    );
-
-}
